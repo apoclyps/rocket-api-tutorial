@@ -29,9 +29,8 @@ Response:
 - GET - List heros
 
 ```bash
- curl http://localhost:8000/heros -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='  | jq .
+ curl http://localhost:8000/heros -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' | jq .
 ```
-
 
 ```json
   {
@@ -48,7 +47,7 @@ Response:
 - GET - show hero
 
 ```bash
-curl http://localhost:8000/heros/1 | jq .
+curl http://localhost:8000/heros/1  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' | jq .
 ```
 
 ```json
@@ -62,7 +61,7 @@ curl http://localhost:8000/heros/1 | jq .
 - POST - create new
 
 ```bash
- curl -X POST http://localhost:8000/heros -H 'Content-Type: application/json' | jq .
+ curl -X POST http://localhost:8000/heros -H 'Content-Type: application/json'  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='  | jq .
 ```
 
 ```json
@@ -76,7 +75,7 @@ curl http://localhost:8000/heros/1 | jq .
 - PUT - Update existing
 
 ```bash
- curl -X PUT http://localhost:8000/heros/1 -H 'Content-Type: application/json' | jq .
+ curl -X PUT http://localhost:8000/heros/1 -H 'Content-Type: application/json'  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='  | jq .
 ```
 
 ```json
@@ -87,10 +86,10 @@ curl http://localhost:8000/heros/1 | jq .
 }
 ```
 
-- DELETE - Detel existing
+- DELETE - Delete existing
 
 ```bash
- curl -X DELETE http://localhost:8000/heros -I
+ curl -X DELETE http://localhost:8000/heros -I  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
 ```
 
 ```bash
