@@ -2,6 +2,16 @@
 
 > Building a Web API with Rust using Rocket
 
+## Setting up the database
+
+```bash
+sudo apt-get install  libsqlite3-dev
+
+cargo install diesel_cli --no-default-features --features sqlite
+
+diesel setup --database-url ./database.sqlite
+```
+
 ## Getting started
 
 Run the service locally
@@ -33,6 +43,7 @@ Response:
 ```
 
 ```json
+[
   {
     "id": 1,
     "name": "Clark Kent"

@@ -1,7 +1,6 @@
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
 
-
 pub struct BasicAuth {
     pub username: String,
     pub password: String,
