@@ -24,11 +24,14 @@ Response:
 
 ## Endpoints
 
+-H 'Authoorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
+
 - GET - List heros
 
 ```bash
- curl http://localhost:8000/heros | jq .
+ curl http://localhost:8000/heros -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='  | jq .
 ```
+
 
 ```json
   {

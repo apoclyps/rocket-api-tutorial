@@ -974,6 +974,7 @@ dependencies = [
 name = "rocket-api-tutorial"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "rocket",
  "serde_json",
 ]
