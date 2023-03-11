@@ -12,6 +12,18 @@ cargo install diesel_cli --no-default-features --features sqlite
 diesel setup --database-url ./database.sqlite
 ```
 
+## Adding a migration
+
+```bash
+diesel migration generate create_heroes
+
+diesel migration list --database-url=database.sqlite
+
+diesel migration run --database-url=database.sqlite
+
+diesel migration revert --database-url=database.sqlite
+```
+
 ## Getting started
 
 Run the service locally
