@@ -101,3 +101,16 @@ content-length: 383
 date: Sat, 11 Mar 2023 10:34:26 GMT
 
 ```
+
+- Handling 404s
+
+```bash
+curl  http://localhost:8000/unsupported/api | jq .
+```
+
+```json
+{
+  "reason": "Not Found",
+  "status": "error"
+}
+```

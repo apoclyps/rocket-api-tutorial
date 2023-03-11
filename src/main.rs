@@ -34,6 +34,12 @@ fn delete_hero(_id: i32) -> status::NoContent {
     status::NoContent
 }
 
+#[catch(404)]
+fn not_found() -> Value {
+    json!({"status": "404", "reason": "Not Found"})
+}
+
+
 #[rocket::main]
 async fn main() {
     let _ = rocket::build()
@@ -48,6 +54,7 @@ async fn main() {
                 delete_hero
             ],
         )
+        .register("/", catchers![not_found])
         .launch()
         .await;
 }
