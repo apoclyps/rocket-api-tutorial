@@ -1,5 +1,8 @@
 #[macro_use]
 extern crate rocket;
+extern crate diesel;
+#[macro_use]
+extern crate rocket_sync_db_pools;
 
 mod auth;
 
@@ -7,13 +10,17 @@ use auth::BasicAuth;
 use rocket::response::status;
 use rocket::serde::json::{json, Value};
 
+#[database("sqlite")]
+struct DBConn(diesel::SqliteConnection);
+
+
 #[get("/")]
 fn index() -> Value {
     json!("Weclome to Hero API")
 }
 
 #[get("/heros")]
-fn get_heros(_auth: BasicAuth) -> Value {
+fn get_heros(_auth: BasicAuth, _db: DBConn) -> Value {
     json!([{"id": 1, "name": "Clark Kent"}, {"id": 2, "name": "Bruce Wayne"}])
 }
 
@@ -62,6 +69,7 @@ async fn main() {
             ],
         )
         .register("/", catchers![not_found, unauthorized])
+        .attach(DBConn::fairing())
         .launch()
         .await;
 }
