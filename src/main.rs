@@ -1,18 +1,23 @@
 #[macro_use]
 extern crate rocket;
+#[macro_use]
 extern crate diesel;
 #[macro_use]
 extern crate rocket_sync_db_pools;
 
 mod auth;
+mod models;
+mod schema;
 
 use auth::BasicAuth;
+use diesel::prelude::*;
+use models::Hero;
 use rocket::response::status;
 use rocket::serde::json::{json, Value};
+use schema::heroes;
 
 #[database("sqlite")]
 struct DBConn(diesel::SqliteConnection);
-
 
 #[get("/")]
 fn index() -> Value {
@@ -20,8 +25,15 @@ fn index() -> Value {
 }
 
 #[get("/heros")]
-fn get_heros(_auth: BasicAuth, _db: DBConn) -> Value {
-    json!([{"id": 1, "name": "Clark Kent"}, {"id": 2, "name": "Bruce Wayne"}])
+async fn get_heros(_auth: BasicAuth, db: DBConn) -> Value {
+    db.run(|c| {
+        let result = heroes::table
+            .limit(100)
+            .load::<Hero>(c)
+            .expect("Failed to read Rustacean entries");
+        json!(result)
+    })
+    .await
 }
 
 #[get("/heros/<id>")]
