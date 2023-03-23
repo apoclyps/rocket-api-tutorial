@@ -74,6 +74,11 @@ fn not_found() -> Value {
     json!({"status": "404", "reason": "Not Found"})
 }
 
+#[catch(422)]
+fn unprocessable() -> Value {
+    json!("Invalid entity. required fields are missing")
+}
+
 #[rocket::main]
 async fn main() {
     let _ = rocket::build()
@@ -88,7 +93,7 @@ async fn main() {
                 delete_hero
             ],
         )
-        .register("/", catchers![not_found, unauthorized])
+        .register("/", catchers![not_found, unprocessable, unauthorized])
         .attach(DBConn::fairing())
         .launch()
         .await;
