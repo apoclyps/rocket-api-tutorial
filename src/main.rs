@@ -11,9 +11,9 @@ mod schema;
 
 use auth::BasicAuth;
 use diesel::prelude::*;
-use models::Hero;
+use models::{Hero, NewHero};
 use rocket::response::status;
-use rocket::serde::json::{json, Value};
+use rocket::serde::json::{json, Json, Value};
 use schema::heroes;
 
 #[database("sqlite")]
@@ -41,9 +41,17 @@ fn view_hero(id: i32, _auth: BasicAuth) -> Value {
     json!({"id": id, "name": "Clark Kent", "email": "clark.kent@dailyplanet.org"})
 }
 
-#[post("/heros", format = "json")]
-fn create_hero(_auth: BasicAuth) -> Value {
-    json!({"id": 3, "name": "John Doe", "email": "clark.kent@dailyplanet.org"})
+#[post("/heros", format = "json", data = "<new_hero>")]
+async fn create_hero(_auth: BasicAuth, db: DBConn, new_hero: Json<NewHero>) -> Value {
+    db.run(|c| {
+        let result = diesel::insert_into(heroes::table)
+            .values(new_hero.into_inner())
+            .execute(c)
+            .expect("Failed to create new hero");
+
+        json!(result)
+    })
+    .await
 }
 
 #[put("/heros/<id>", format = "json")]

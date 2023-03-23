@@ -23,7 +23,7 @@ impl BasicAuth {
     fn from_base64_encoded(base64_string: &str) -> Option<BasicAuth> {
         let decoded = base64::decode(base64_string).ok()?;
         let decoded_str = String::from_utf8(decoded).ok()?;
-        let split = decoded_str.split(":").collect::<Vec<_>>();
+        let split = decoded_str.split(':').collect::<Vec<_>>();
 
         // If exactly username & password pair are present
         if split.len() != 2 {
