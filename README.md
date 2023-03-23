@@ -24,6 +24,20 @@ diesel migration run --database-url=database.sqlite
 diesel migration revert --database-url=database.sqlite
 ```
 
+## Linting
+
+You can also set up pre-commit to run the linting steps automatically during the commit phase, the pre-commit pipeline can be set up by running the following command on the project root:
+
+```bash
+pre-commit install
+```
+
+To manually run it:
+
+```bash
+pre-commit run --all
+```
+
 ## Getting started
 
 Run the service locally
@@ -84,7 +98,7 @@ curl http://localhost:8000/heros/1  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHN
 - POST - create new
 
 ```bash
- curl -X POST http://localhost:8000/heros -H 'Content-Type: application/json'  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='  | jq .
+ curl -X POST http://localhost:8000/heros -H 'Content-Type: application/json'  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' -d '{"name": "John Doe", "email": "clark.kent@dailyplanet.org"}' | jq .
 ```
 
 ```json
