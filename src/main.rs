@@ -31,14 +31,23 @@ async fn get_heros(_auth: BasicAuth, db: DBConn) -> Value {
             .limit(100)
             .load::<Hero>(c)
             .expect("Failed to read Rustacean entries");
+
         json!(result)
     })
     .await
 }
 
 #[get("/heros/<id>")]
-fn view_hero(id: i32, _auth: BasicAuth) -> Value {
-    json!({"id": id, "name": "Clark Kent", "email": "clark.kent@dailyplanet.org"})
+async fn view_hero(id: i32, _auth: BasicAuth, db: DBConn) -> Value {
+    db.run(move |c| {
+        let result = heroes::table
+            .find(id)
+            .get_result::<Hero>(c)
+            .expect("Failed to read Hero row");
+
+        json!(result)
+    })
+    .await
 }
 
 #[post("/heros", format = "json", data = "<new_hero>")]
@@ -54,14 +63,32 @@ async fn create_hero(_auth: BasicAuth, db: DBConn, new_hero: Json<NewHero>) -> V
     .await
 }
 
-#[put("/heros/<id>", format = "json")]
-fn update_hero(id: i32, _auth: BasicAuth) -> Value {
-    json!({"id": id, "name": "Clark Kent", "email": "clark.kent@dailyplanet.org"})
+#[put("/heros/<id>", format = "json", data = "<hero>")]
+async fn update_hero(id: i32, _auth: BasicAuth, db: DBConn, hero: Json<Hero>) -> Value {
+    db.run(move |c| {
+        let result = diesel::update(heroes::table.find(id))
+            .set((
+                heroes::name.eq(hero.name.to_owned()),
+                heroes::email.eq(hero.email.to_owned()),
+            ))
+            .execute(c)
+            .expect("Failed to update hero");
+
+        json!(result)
+    })
+    .await
 }
 
-#[delete("/heros/<_id>")]
-fn delete_hero(_id: i32, _auth: BasicAuth) -> status::NoContent {
-    status::NoContent
+#[delete("/heros/<id>")]
+async fn delete_hero(id: i32, _auth: BasicAuth, db: DBConn) -> status::NoContent {
+    db.run(move |c| {
+        diesel::delete(heroes::table.find(id))
+            .execute(c)
+            .expect("Failed to delete hero");
+
+        status::NoContent
+    })
+    .await
 }
 
 #[catch(401)]

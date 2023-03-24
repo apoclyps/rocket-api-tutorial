@@ -1,11 +1,14 @@
 use super::schema::heroes;
 
-#[derive(serde::Serialize, Queryable)]
+#[derive(serde::Serialize, serde::Deserialize, Queryable)]
 pub struct Hero {
+    #[serde(skip_deserializing)]
     pub id: i32,
     pub name: String,
     pub email: String,
+    #[serde(skip_deserializing)]
     pub created_at: String,
+    #[serde(skip_deserializing)]
     pub updated_at: String,
 }
 
