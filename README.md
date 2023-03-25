@@ -126,7 +126,7 @@ curl http://localhost:8000/heros/1  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHN
 - DELETE - Delete existing
 
 ```bash
- curl -X DELETE http://localhost:8000/heros/3 -I  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
+ curl -X DELETE http://localhost:8000/heros/1 -I  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
 ```
 
 ```bash
