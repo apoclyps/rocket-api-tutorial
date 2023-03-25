@@ -98,21 +98,21 @@ curl http://localhost:8000/heros/1  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHN
 - POST - create new
 
 ```bash
- curl -X POST http://localhost:8000/heros -H 'Content-Type: application/json'  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' -d '{"name": "John Doe", "email": "clark.kent@dailyplanet.org"}' | jq .
+ curl -X POST http://localhost:8000/heros -H 'Content-Type: application/json'  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' -d '{"name": "Clark Kent", "email": "clark.kent@dailyplanet.org"}' | jq .
 ```
 
 ```json
 {
   "email": "clark.kent@dailyplanet.org",
   "id": 3,
-  "name": "John Doe"
+  "name": "Clark Kent"
 }
 ```
 
 - PUT - Update existing
 
 ```bash
- curl -X PUT http://localhost:8000/heros/1 -H 'Content-Type: application/json'  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='  | jq .
+ curl -X PUT http://localhost:8000/heros/1 -H 'Content-Type: application/json'  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' -d '{"name": "Clark J Kent", "email": "clark.j.kent@dailyplanet.org"}'  | jq .
 ```
 
 ```json
@@ -126,7 +126,7 @@ curl http://localhost:8000/heros/1  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHN
 - DELETE - Delete existing
 
 ```bash
- curl -X DELETE http://localhost:8000/heros -I  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
+ curl -X DELETE http://localhost:8000/heros/3 -I  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
 ```
 
 ```bash

@@ -7,14 +7,15 @@ extern crate rocket_sync_db_pools;
 
 mod auth;
 mod models;
+mod repositories;
 mod schema;
 
 use auth::BasicAuth;
-use diesel::prelude::*;
 use models::{Hero, NewHero};
 use rocket::response::status;
 use rocket::serde::json::{json, Json, Value};
-use schema::heroes;
+
+use crate::repositories::HeroesRepository;
 
 #[database("sqlite")]
 struct DBConn(diesel::SqliteConnection);
@@ -27,10 +28,7 @@ fn index() -> Value {
 #[get("/heros")]
 async fn get_heros(_auth: BasicAuth, db: DBConn) -> Value {
     db.run(|c| {
-        let result = heroes::table
-            .limit(100)
-            .load::<Hero>(c)
-            .expect("Failed to read Rustacean entries");
+        let result = HeroesRepository::all(c, 100).expect("Failed to read Rustacean entries");
 
         json!(result)
     })
@@ -40,11 +38,7 @@ async fn get_heros(_auth: BasicAuth, db: DBConn) -> Value {
 #[get("/heros/<id>")]
 async fn view_hero(id: i32, _auth: BasicAuth, db: DBConn) -> Value {
     db.run(move |c| {
-        let result = heroes::table
-            .find(id)
-            .get_result::<Hero>(c)
-            .expect("Failed to read Hero row");
-
+        let result = HeroesRepository::find(c, id).expect("Failed to read Hero row");
         json!(result)
     })
     .await
@@ -53,10 +47,8 @@ async fn view_hero(id: i32, _auth: BasicAuth, db: DBConn) -> Value {
 #[post("/heros", format = "json", data = "<new_hero>")]
 async fn create_hero(_auth: BasicAuth, db: DBConn, new_hero: Json<NewHero>) -> Value {
     db.run(|c| {
-        let result = diesel::insert_into(heroes::table)
-            .values(new_hero.into_inner())
-            .execute(c)
-            .expect("Failed to create new hero");
+        let result: Hero =
+            HeroesRepository::create(c, new_hero.into_inner()).expect("Failed to create new hero");
 
         json!(result)
     })
@@ -66,13 +58,8 @@ async fn create_hero(_auth: BasicAuth, db: DBConn, new_hero: Json<NewHero>) -> V
 #[put("/heros/<id>", format = "json", data = "<hero>")]
 async fn update_hero(id: i32, _auth: BasicAuth, db: DBConn, hero: Json<Hero>) -> Value {
     db.run(move |c| {
-        let result = diesel::update(heroes::table.find(id))
-            .set((
-                heroes::name.eq(hero.name.to_owned()),
-                heroes::email.eq(hero.email.to_owned()),
-            ))
-            .execute(c)
-            .expect("Failed to update hero");
+        let result =
+            HeroesRepository::save(c, id, hero.into_inner()).expect("Failed to update hero");
 
         json!(result)
     })
@@ -82,9 +69,7 @@ async fn update_hero(id: i32, _auth: BasicAuth, db: DBConn, hero: Json<Hero>) ->
 #[delete("/heros/<id>")]
 async fn delete_hero(id: i32, _auth: BasicAuth, db: DBConn) -> status::NoContent {
     db.run(move |c| {
-        diesel::delete(heroes::table.find(id))
-            .execute(c)
-            .expect("Failed to delete hero");
+        HeroesRepository::delete(c, id).expect("Failed to delete hero");
 
         status::NoContent
     })
