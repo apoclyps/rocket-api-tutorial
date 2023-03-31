@@ -58,6 +58,40 @@ Response:
 "Hello, world!"
 ```
 
+## Releasing a build
+
+Building a production release is handled via:
+
+From the build server:
+
+```bash
+cargo build --release
+
+scp target/release/rocket-api-tutorial HOST:/var/www/rocket-api-tutorial
+```
+
+## Hosting
+
+Hosting is currently configured on a remote server
+
+From the server hosting the API - setup and configure systemd for the service:
+
+```bash
+sudo su
+cd /etc/systemd/system
+
+# add systemd.service
+
+systemctl start rocket-api-tutorial
+systemctl enable rocket-api-tutorial
+```
+
+On subsequent updates:
+
+```aaa
+systemctl restart rocket-api-tutorial
+```
+
 ## Endpoints
 
 -H 'Authoorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
@@ -126,7 +160,7 @@ curl http://localhost:8000/heros/1  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHN
 - DELETE - Delete existing
 
 ```bash
- curl -X DELETE http://localhost:8000/heros/1 -I  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
+ curl -X DELETE http://localhost:8000/heros/1 -I   -H 'Content-Type: application/json'  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
 ```
 
 ```bash
