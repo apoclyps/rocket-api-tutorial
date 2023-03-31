@@ -4,6 +4,8 @@ extern crate rocket;
 extern crate diesel;
 #[macro_use]
 extern crate rocket_sync_db_pools;
+#[macro_use]
+extern crate diesel_migrations;
 
 mod auth;
 mod models;
@@ -12,14 +14,18 @@ mod schema;
 
 use auth::BasicAuth;
 use models::{Hero, NewHero};
+use rocket::fairing::AdHoc;
 use rocket::http::Status;
 use rocket::response::status::{self, Custom};
 use rocket::serde::json::{json, Json, Value};
+use rocket::{Build, Rocket};
 
 use crate::repositories::HeroesRepository;
 
 #[database("sqlite")]
 struct DBConn(diesel::SqliteConnection);
+
+embed_migrations!();
 
 #[get("/")]
 fn index() -> Value {
@@ -108,6 +114,20 @@ fn unprocessable() -> Value {
     json!("Invalid entity. required fields are missing")
 }
 
+async fn run_db_migrations(rocket: Rocket<Build>) -> Result<Rocket<Build>, Rocket<Build>> {
+    DBConn::get_one(&rocket)
+        .await
+        .expect("failed to retrieve database connection")
+        .run(|c| match embedded_migrations::run(c) {
+            Ok(()) => Ok(rocket),
+            Err(e) => {
+                println!("Failed to run database migrations: {:?}", e);
+                Err(rocket)
+            }
+        })
+        .await
+}
+
 #[rocket::main]
 async fn main() {
     let _ = rocket::build()
@@ -124,6 +144,10 @@ async fn main() {
         )
         .register("/", catchers![not_found, unprocessable, unauthorized])
         .attach(DBConn::fairing())
+        .attach(AdHoc::try_on_ignite(
+            "RUnning DB Migrations",
+            run_db_migrations,
+        ))
         .launch()
         .await;
 }
